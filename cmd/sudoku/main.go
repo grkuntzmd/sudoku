@@ -16,6 +16,93 @@
 
 package main
 
-func main()  {
+import (
+	"bufio"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"path"
+	"strings"
 
+	"github.com/grkuntzmd/sudoku/solver"
+)
+
+type inputs []string
+
+var (
+	buildInfo  string
+	buildStamp string
+	gitHash    string
+	version    string
+
+	level0Count int
+	level1Count int
+	level2Count int
+	level3Count int
+	level4Count int
+
+	input inputs
+)
+
+func init() {
+	flag.IntVar(&level0Count, "0", 0, "`count` of easy games to generate")
+	flag.IntVar(&level1Count, "1", 0, "`count` of medium games to generate")
+	flag.IntVar(&level2Count, "2", 0, "`count` of hard games to generate")
+	flag.IntVar(&level3Count, "3", 0, "`count` of ridiculous games to generate")
+	flag.IntVar(&level4Count, "4", 0, "`count` of (almost) impossible games to generate")
+
+	flag.Var(&input, "i", "`file` containing input patterns (may be repeated)")
+
+	if buildInfo != "" {
+		parts := strings.Split(buildInfo, "|")
+		if len(parts) >= 3 {
+			buildStamp = parts[0]
+			gitHash = parts[1]
+			version = parts[2]
+		}
+	}
+}
+
+func main() {
+	flag.CommandLine.Usage = usage
+	flag.Parse()
+
+	r := make([]io.Reader, 0)
+	for _, i := range input {
+		f, err := os.Open(i)
+		if err != nil {
+			panic(fmt.Sprintf("cannot open %s for reading", i))
+		}
+		r = append(r, f)
+	}
+
+	s := bufio.NewScanner(io.MultiReader(r...))
+	var total, solved int
+	for s.Scan() {
+		encoded := s.Text()
+		total++
+		if _, ok := solver.ParseGrid(encoded).Solve(); ok {
+			solved++
+		}
+	}
+	fmt.Printf("Solved %d out of %d\n", solved, total)
+	if err := s.Err(); err != nil {
+		panic(err)
+	}
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage: %s\n", path.Base(os.Args[0]))
+	fmt.Fprintf(os.Stderr, "buildStamp: %s, gitHash: %s, version: %s\n", buildStamp, gitHash, version)
+	flag.PrintDefaults()
+}
+
+func (i *inputs) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
+func (i *inputs) String() string {
+	return strings.Join(*i, ",")
 }

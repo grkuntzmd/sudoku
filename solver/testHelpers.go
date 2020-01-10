@@ -16,32 +16,22 @@
 
 package solver
 
-func (gr *Grid) validate() bool {
-	return gr.validateGroup(box) && gr.validateGroup(col) && gr.validateGroup(row)
+import "testing"
+
+func assertEqual(t *testing.T, a, b interface{}) {
+	if a != b {
+		t.Fatalf("%+v != %+v", a, b)
+	}
 }
 
-func (gr *Grid) validateGroup(g group) bool {
-	for _, c := range g.unit {
-		var cells [10]int
-		for _, p := range c {
-			val := *gr.pt(p)
-			if count[val] == 0 {
-				gr.Display()
-				panic("empty cell")
-			}
-			for d := one; d <= 9; d++ {
-				if val&(1<<d) != 0 {
-					cells[d]++
-				}
-			}
-		}
-
-		for d := one; d <= 9; d++ {
-			if cells[d] != 1 {
-				return false
-			}
-		}
+func assertFalse(t *testing.T, a bool) {
+	if a {
+		t.Fatal("should be false")
 	}
+}
 
-	return true
+func assertTrue(t *testing.T, a bool) {
+	if !a {
+		t.Fatal("should be true")
+	}
 }

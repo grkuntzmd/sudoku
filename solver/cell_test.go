@@ -16,9 +16,7 @@
 
 package solver
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestXor(t *testing.T) {
 	cl := cell(0x6)
@@ -66,22 +64,4 @@ func TestOr(t *testing.T) {
 	val = cell(0x2)
 	assertFalse(t, cl.or(val))
 	assertEqual(t, cell(0xe), cl)
-}
-
-func assertEqual(t *testing.T, a, b interface{}) {
-	if a != b {
-		t.Fatalf("%s != %s", a, b)
-	}
-}
-
-func assertFalse(t *testing.T, a bool) {
-	if a {
-		t.Fatal("should be false")
-	}
-}
-
-func assertTrue(t *testing.T, a bool) {
-	if !a {
-		t.Fatal("should be true")
-	}
 }

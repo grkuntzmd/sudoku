@@ -18,7 +18,7 @@ package solver
 
 import "fmt"
 
-// PointingLine removes candidates. When a candidate within a box appears only in a single column or row, that candidate can be removed from all cells in the column or row outside of the box. It returns true if it removes any digits.
+// PointingLine removes candidates. When a candidate within a box appears only in a single column or row, that candidate can be removed from all cells in the column or row outside of the box. It returns true if it changes any cells.
 func (gr *Grid) pointingLine() bool {
 	return gr.pointingLineGroup(func(p point) *[9]point {
 		return &col.unit[p.c]
@@ -34,35 +34,26 @@ func (gr *Grid) pointingLine() bool {
 func (gr *Grid) pointingLineGroup(sel func(point) *[9]point, axis func(point) int) bool {
 	res := false
 	for bi, b := range box.unit {
-		var digits [10][]point
-		// Build a table of which points contain each digit.
-		for _, p := range b {
-			val := gr[p.r][p.c]
-			for d := one; d <= 9; d++ {
-				if val&(1<<d) != 0 {
-					digits[d] = append(digits[d], p)
-				}
-			}
-		}
+		points := gr.digitPoints(b)
 
 		// Loop through the digits and determine if all of them are on the same line (col or row). If
 		// so, then all other cells in that line that are not in the current box can have those digits
 		// removed.
 	outer:
 		for d := one; d <= 9; d++ {
-			a := axis(digits[d][0])
-			for _, p := range digits[d][1:] {
+			a := axis(points[d][0])
+			for _, p := range points[d][1:] {
 				if axis(p) != a {
 					continue outer
 				}
 			}
 
-			for _, p := range sel(digits[d][0]) {
+			for _, p := range sel(points[d][0]) {
 				if p.r/3*3+p.c/3 == bi {
 					continue
 				}
 
-				if (&gr[p.r][p.c]).xor(1 << d) {
+				if gr.pt(p).xor(1 << d) {
 					res = true
 					if verbose >= 1 {
 						fmt.Printf("pointingline: in box %d removing %d from %s\n", bi, d, p)

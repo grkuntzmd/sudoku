@@ -18,7 +18,7 @@ package solver
 
 import "fmt"
 
-// NakedPair checks a group for 2 cells with the same pair of values. If present, those values can be removed from all other cells in the group. It returns true if it removes any digits.
+// NakedPair checks a group for 2 cells with the same pair of values. If present, those values can be removed from all other cells in the group. It returns true if it changes any cells.
 func (gr *Grid) nakedPair() bool {
 	return gr.nakedPairGroup(box) || gr.nakedPairGroup(col) || gr.nakedPairGroup(row)
 }
@@ -27,8 +27,8 @@ func (gr *Grid) nakedPairGroup(g group) (res bool) {
 	for ci, c := range g.unit {
 	outer:
 		for _, p1 := range c {
-			val := gr[p1.r][p1.c]
-			if count[val] != 2 {
+			cell1 := *gr.pt(p1)
+			if count[cell1] != 2 {
 				continue
 			}
 
@@ -37,8 +37,8 @@ func (gr *Grid) nakedPairGroup(g group) (res bool) {
 					continue
 				}
 
-				cell2 := &gr[p2.r][p2.c]
-				if *cell2 != val {
+				cell2 := *gr.pt(p2)
+				if cell1 != cell2 {
 					continue
 				}
 
@@ -47,10 +47,10 @@ func (gr *Grid) nakedPairGroup(g group) (res bool) {
 						continue
 					}
 
-					if gr[p3.r][p3.c].xor(val) {
+					if gr.pt(p3).xor(cell1) {
 						res = true
 						if verbose >= 1 {
-							fmt.Printf("nakedpair: in %s %d removed %s from %s\n", g.name, ci, val.digits(), p3)
+							fmt.Printf("nakedpair: in %s %d removed %s from %s\n", g.name, ci, cell1.digits(), p3)
 						}
 						if verbose >= 3 {
 							gr.Display()

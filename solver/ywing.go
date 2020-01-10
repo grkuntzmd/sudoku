@@ -15,33 +15,3 @@
  */
 
 package solver
-
-func (gr *Grid) validate() bool {
-	return gr.validateGroup(box) && gr.validateGroup(col) && gr.validateGroup(row)
-}
-
-func (gr *Grid) validateGroup(g group) bool {
-	for _, c := range g.unit {
-		var cells [10]int
-		for _, p := range c {
-			val := *gr.pt(p)
-			if count[val] == 0 {
-				gr.Display()
-				panic("empty cell")
-			}
-			for d := one; d <= 9; d++ {
-				if val&(1<<d) != 0 {
-					cells[d]++
-				}
-			}
-		}
-
-		for d := one; d <= 9; d++ {
-			if cells[d] != 1 {
-				return false
-			}
-		}
-	}
-
-	return true
-}

@@ -23,92 +23,7 @@ import (
 	"strings"
 )
 
-type (
-	Grid [9][9]cell
-
-	Game struct {
-		Orig Grid
-		Curr Grid
-	}
-)
-
-// ParseGrid parses a string of digits and dots into a game structure containing two grids: the original set up and current set up. It panics on any illegal input.
-func ParseGrid(input string) *Game {
-	var game Game
-	for r := 0; r < 9; r++ {
-		for c := 0; c < 9; c++ {
-			if input[r*9+c] == '.' {
-				for i := uint16(1); i <= 9; i++ {
-					game.Orig[r][c] |= 1 << i
-				}
-			} else {
-				d, err := strconv.Atoi(string(input[r*9+c]))
-				if err != nil {
-					panic(fmt.Sprintf("illegal character in input grid: %s (\"%c\")", input, input[r*9+c]))
-				}
-				game.Orig[r][c] |= 1 << uint16(d)
-			}
-		}
-	}
-
-	return &game
-}
-
-// Solve solves the current grid of the given game.
-func (ga *Game) Solve() (int, bool) {
-	ga.Orig.Display()
-
-	// Copy the original grid to the current grid so that the original is preserved.
-	ga.Curr = ga.Orig
-
-	maxLevel := Level0
-	for !ga.Curr.validate() {
-		var ok bool
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level0, []func() bool{
-			ga.Curr.nakedSingle,
-			ga.Curr.hiddenSingle,
-		})
-		if ok {
-			continue
-		}
-
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level1, []func() bool{
-			ga.Curr.nakedPair,
-			ga.Curr.hiddenPair,
-			ga.Curr.boxLine,
-			ga.Curr.pointingLine,
-		})
-		if ok {
-			continue
-		}
-
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level2, []func() bool{})
-		if ok {
-			continue
-		}
-
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level3, []func() bool{})
-		if ok {
-			continue
-		}
-
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level4, []func() bool{})
-		if ok {
-			continue
-		}
-
-		break
-	}
-
-	valid := ga.Curr.validate()
-	if !valid {
-		fmt.Println("Not solved")
-	}
-	ga.Curr.Display()
-	fmt.Printf("maxLevel: %d\n", maxLevel)
-
-	return maxLevel, valid
-}
+type Grid [9][9]cell
 
 // Display prints a grid.
 func (gr *Grid) Display() {
@@ -145,6 +60,34 @@ func (gr *Grid) Display() {
 	fmt.Printf("\t%s%s%s%s%s%s%s\n", "\u2514", bars, "\u2534", bars, "\u2534", bars, "\u2518")
 }
 
+// digitPlaces returns an array of digits containing values where the bits (1 - 9) are set if the corresponding digit appears in that cell.
+func (gr *Grid) digitPlaces(u [9]point) (places [10]cell) {
+		for pi, p := range u {
+			val := *gr.pt(p)
+			for i := one; i <= 9; i++ {
+				if val&(1<<i) != 0 {
+					places[i] |= 1 << uint(pi)
+				}
+			}
+		}
+
+		return
+}
+
+// digitPoints builds a table of points that contain each digit.
+func (gr *Grid) digitPoints(u [9]point) (points [10][]point) {
+	for _, p := range u {
+		val := *gr.pt(p)
+		for d := one; d <= 9; d++ {
+			if val&(1<<d) != 0 {
+				points[d] = append(points[d], p)
+			}
+		}
+	}
+
+	return
+}
+
 func (gr *Grid) maxWidth() int {
 	width := 0
 	for r := 0; r < 9; r++ {
@@ -160,6 +103,10 @@ func (gr *Grid) maxWidth() int {
 	}
 
 	return width
+}
+
+func (gr *Grid) pt(p point) *cell {
+	return &gr[p.r][p.c]
 }
 
 func (gr *Grid) solveLevel(maxLevel, level int, fns []func() bool) (int, bool) {

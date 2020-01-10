@@ -18,7 +18,7 @@ package solver
 
 import "fmt"
 
-// NakedSingle removes digits from other items in a group (box, column, row) when a cell contains a solved value and returns true if it removes any digits.
+// NakedSingle removes digits from other items in a group (box, column, row) when a cell contains a solved value and returns true if it changes any cells.
 func (gr *Grid) nakedSingle() bool {
 	return gr.nakedSingleGroup(box) || gr.nakedSingleGroup(col) || gr.nakedSingleGroup(row)
 }
@@ -26,7 +26,7 @@ func (gr *Grid) nakedSingle() bool {
 func (gr *Grid) nakedSingleGroup(g group) (res bool) {
 	for ci, c := range g.unit {
 		for _, p1 := range c {
-			val := gr[p1.r][p1.c]
+			val := *gr.pt(p1)
 			if count[val] != 1 {
 				continue
 			}
@@ -36,7 +36,7 @@ func (gr *Grid) nakedSingleGroup(g group) (res bool) {
 					continue
 				}
 
-				if (gr[p2.r][p2.c]).xor(val) {
+				if (gr.pt(p2)).xor(val) {
 					res = true
 					if verbose >= 1 {
 						fmt.Printf("nakedsingle: in %s %d cell %s allows only %s, removed from %s\n", g.name, ci, p1, val.digits(), p2)

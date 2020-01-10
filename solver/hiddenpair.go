@@ -18,38 +18,30 @@ package solver
 
 import "fmt"
 
-// HiddenPair removes other digits from a pair of cells in a group (box, column, row) when that pair contains the only occurrances of the digits in the group and returns true if it removes any digits.
+// HiddenPair removes other digits from a pair of cells in a group (box, column, row) when that pair contains the only occurrances of the digits in the group and returns true if it changes any cells.
 func (gr *Grid) hiddenPair() bool {
 	return gr.hiddenPairGroup(box) || gr.hiddenPairGroup(col) || gr.hiddenPairGroup(row)
 }
 
 func (gr *Grid) hiddenPairGroup(g group) (res bool) {
 	for ci, c := range g.unit {
-		var digits [10][]point // Points that contain a specific digit.
-		for _, p := range c {
-			val := gr[p.r][p.c]
-			for i := one; i <= 9; i++ {
-				if val&(1<<i) != 0 {
-					digits[i] = append(digits[i], p)
-				}
-			}
-		}
+		points := gr.digitPoints(c)
 
 		for i1 := cell(1); i1 <= 8; i1++ {
-			if len(digits[i1]) != 2 {
+			if len(points[i1]) != 2 {
 				continue
 			}
 
 			for i2 := i1 + 1; i2 <= 9; i2++ {
-				if len(digits[i2]) != 2 {
+				if len(points[i2]) != 2 {
 					continue
 				}
 
-				if comparePointSlices(digits[i1], digits[i2]) {
+				if comparePointSlices(points[i1], points[i2]) {
 					comb := cell(1<<i1 | 1<<i2)
 					for k := 0; k < 2; k++ {
-						p := digits[i1][k]
-						if gr[p.r][p.c].replace(comb) {
+						p := points[i1][k]
+						if gr.pt(p).replace(comb) {
 							res = true
 							if verbose >= 1 {
 								fmt.Printf("hiddenpair: in %s %d limits %s to %s\n", g.name, ci, p, comb.digits())

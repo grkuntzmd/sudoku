@@ -18,7 +18,7 @@ package solver
 
 import "fmt"
 
-// BoxLine removes candidates. When a candidate within a column or row appears only in a single box that candidate can be removed from all cells in the box, other than those in the column or row. It returns true if it removes any digits.
+// BoxLine removes candidates. When a candidate within a column or row appears only in a single box that candidate can be removed from all cells in the box, other than those in the column or row. It returns true if it changes any cells.
 func (gr *Grid) boxLine() bool {
 	colSel := func(p point) int {
 		return p.c
@@ -39,15 +39,15 @@ func (gr *Grid) boxLineGroup(g group, major, minor func(point) int, boxSel func(
 	for ci, c := range g.unit {
 		var boxes [10][3]bool // True if box that contains a specific digit.
 		for _, p := range c {
-			val := gr[p.r][p.c]
-			for d := uint16(1); d <= 9; d++ {
+			val := *gr.pt(p)
+			for d := one; d <= 9; d++ {
 				if val&(1<<d) != 0 {
 					boxes[d][minor(p)/3] = true
 				}
 			}
 		}
 
-		for d := uint16(1); d <= 9; d++ {
+		for d := one; d <= 9; d++ {
 			var index int
 			if boxes[d][0] && !boxes[d][1] && !boxes[d][2] {
 				index = 0
@@ -65,7 +65,7 @@ func (gr *Grid) boxLineGroup(g group, major, minor func(point) int, boxSel func(
 					continue
 				}
 
-				if gr[p.r][p.c].xor(1 << d) {
+				if gr.pt(p).xor(1 << d) {
 					res = true
 					if verbose >= 1 {
 						fmt.Printf("boxline: all %d's in %s %d appear in box %d removing from %s\n", d, g.name, ci, boxSel(index, ci), p)

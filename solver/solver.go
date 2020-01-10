@@ -29,8 +29,6 @@ const (
 	Level2
 	Level3
 	Level4
-
-	one = uint16(1)
 )
 
 type (

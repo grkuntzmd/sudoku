@@ -38,7 +38,7 @@ func (gr *Grid) Display() {
 		fmt.Print("\t\u2502")
 		for c := 0; c < 9; c++ {
 			var b strings.Builder
-			for i := one; i <= 9; i++ {
+			for i := 1; i <= 9; i++ {
 				if gr[r][c]&(1<<i) != 0 {
 					b.WriteString(strconv.Itoa(int(i)))
 				}
@@ -62,23 +62,23 @@ func (gr *Grid) Display() {
 
 // digitPlaces returns an array of digits containing values where the bits (1 - 9) are set if the corresponding digit appears in that cell.
 func (gr *Grid) digitPlaces(u [9]point) (places [10]cell) {
-		for pi, p := range u {
-			val := *gr.pt(p)
-			for i := one; i <= 9; i++ {
-				if val&(1<<i) != 0 {
-					places[i] |= 1 << uint(pi)
-				}
+	for pi, p := range u {
+		val := *gr.pt(p)
+		for i := 1; i <= 9; i++ {
+			if val&(1<<i) != 0 {
+				places[i] |= 1 << uint(pi)
 			}
 		}
+	}
 
-		return
+	return
 }
 
 // digitPoints builds a table of points that contain each digit.
 func (gr *Grid) digitPoints(u [9]point) (points [10][]point) {
 	for _, p := range u {
 		val := *gr.pt(p)
-		for d := one; d <= 9; d++ {
+		for d := 1; d <= 9; d++ {
 			if val&(1<<d) != 0 {
 				points[d] = append(points[d], p)
 			}

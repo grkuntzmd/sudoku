@@ -30,7 +30,7 @@ type (
 // String prints the string representation of a Cell.
 func (c cell) String() string {
 	var s strings.Builder
-	for i := one; i <= 9; i++ {
+	for i := 1; i <= 9; i++ {
 		if c&(1<<i) != 0 {
 			s.WriteString(strconv.Itoa(int(i))) // nolint
 		}
@@ -47,7 +47,7 @@ func (c *cell) and(o cell) bool {
 
 func (c cell) digits() string {
 	var d []string
-	for i := one; i <= 9; i++ {
+	for i := 1; i <= 9; i++ {
 		if c&(1<<i) != 0 {
 			d = append(d, strconv.Itoa(int(i)))
 		}

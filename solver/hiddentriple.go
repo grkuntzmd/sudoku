@@ -29,7 +29,7 @@ func (gr *Grid) hiddenTripleGroup(g group) (res bool) {
 	for ci, c := range g.unit {
 		places := gr.digitPlaces(c)
 
-		for i1 := one; i1 <= 7; i1++ {
+		for i1 := 1; i1 <= 7; i1++ {
 			p1 := places[i1]
 			c1 := count[p1]
 			if c1 == 1 || c1 > 3 {
@@ -78,8 +78,3 @@ func (gr *Grid) hiddenTripleGroup(g group) (res bool) {
 
 	return
 }
-
-/* func showBits(c cell) string {
-	return strconv.FormatUint(uint64(c), 2)
-}
-*/

@@ -36,11 +36,9 @@ func (gr *Grid) pointingLineGroup(sel func(point) *[9]point, axis func(point) in
 	for bi, b := range box.unit {
 		points := gr.digitPoints(b)
 
-		// Loop through the digits and determine if all of them are on the same line (col or row). If
-		// so, then all other cells in that line that are not in the current box can have those digits
-		// removed.
+		// Loop through the digits and determine if all of them are on the same line (col or row). If so, then all other cells in that line that are not in the current box can have those digits removed.
 	outer:
-		for d := one; d <= 9; d++ {
+		for d := 1; d <= 9; d++ {
 			a := axis(points[d][0])
 			for _, p := range points[d][1:] {
 				if axis(p) != a {

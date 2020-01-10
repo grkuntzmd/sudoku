@@ -32,7 +32,7 @@ func ParseGrid(input string) *Game {
 	for r := 0; r < 9; r++ {
 		for c := 0; c < 9; c++ {
 			if input[r*9+c] == '.' {
-				for i := one; i <= 9; i++ {
+				for i := 1; i <= 9; i++ {
 					game.Orig[r][c] |= 1 << i
 				}
 			} else {
@@ -73,7 +73,9 @@ func (ga *Game) Solve() (int, bool) {
 			continue
 		}
 
-		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level1, []func() bool{})
+		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level1, []func() bool{
+			ga.Curr.xWing,
+		})
 		if ok {
 			continue
 		}
@@ -101,7 +103,7 @@ func (ga *Game) Solve() (int, bool) {
 		fmt.Println("Not solved")
 	}
 	ga.Curr.Display()
-	fmt.Printf("maxLevel: %d\n", maxLevel)
+	fmt.Printf("max level: %d\n", maxLevel)
 
 	return maxLevel, valid
 }

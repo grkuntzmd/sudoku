@@ -27,7 +27,7 @@ func (gr *Grid) hiddenSingleGroup(g group) (res bool) {
 	for ci, c := range g.unit {
 		points := gr.digitPoints(c)
 
-		for i := one; i <= 9; i++ {
+		for i := 1; i <= 9; i++ {
 			if len(points[i]) == 1 {
 				p := points[i][0]
 				if gr.pt(p).replace(1 << i) {

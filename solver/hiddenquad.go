@@ -29,7 +29,7 @@ func (gr *Grid) hiddenQuadGroup(g group) (res bool) {
 	for ci, c := range g.unit {
 		places := gr.digitPlaces(c)
 
-		for i1 := one; i1 <= 6; i1++ {
+		for i1 := 1; i1 <= 6; i1++ {
 			p1 := places[i1]
 			c1 := count[p1]
 			if c1 == 1 || c1 > 4 {

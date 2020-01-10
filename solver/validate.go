@@ -29,14 +29,14 @@ func (gr *Grid) validateGroup(g group) bool {
 				gr.Display()
 				panic("empty cell")
 			}
-			for d := one; d <= 9; d++ {
+			for d := 1; d <= 9; d++ {
 				if val&(1<<d) != 0 {
 					cells[d]++
 				}
 			}
 		}
 
-		for d := one; d <= 9; d++ {
+		for d := 1; d <= 9; d++ {
 			if cells[d] != 1 {
 				return false
 			}

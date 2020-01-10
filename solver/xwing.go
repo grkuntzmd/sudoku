@@ -51,7 +51,7 @@ func (gr *Grid) xWingGroup(majorGroup, minorGroup group) (res bool) {
 									continue
 								}
 								// fmt.Printf("%s %s\n", showBits(*gr.pt(m)), showBits(cell(1<<d)))
-								if gr.pt(m).and(^cell(1 << d)) {
+								if gr.pt(m).andNot(cell(1 << d)) {
 									res = true
 									if verbose >= 1 {
 										fmt.Printf("xwing: in %ss %d and %d, %d appears only in %s %d and 1 other; "+

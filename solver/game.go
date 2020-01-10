@@ -75,6 +75,7 @@ func (ga *Game) Solve() (int, bool) {
 
 		maxLevel, ok = ga.Curr.solveLevel(maxLevel, Level1, []func() bool{
 			ga.Curr.xWing,
+			ga.Curr.yWing,
 		})
 		if ok {
 			continue

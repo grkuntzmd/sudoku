@@ -19,49 +19,61 @@ package solver
 import "testing"
 
 func TestXor(t *testing.T) {
-	cl := cell(0x6)
-	val := cell(0x2)
+	cl := cell(0b0110)
+	val := cell(0b0010)
 	assertTrue(t, cl.xor(val))
-	assertEqual(t, cell(0x4), cl)
+	assertEqual(t, cell(0b0100), cl)
 
-	cl = cell(0x8)
-	val = cell(0x6)
+	cl = cell(0b1000)
+	val = cell(0b0110)
 	assertFalse(t, cl.xor(val))
-	assertEqual(t, cell(0x8), cl)
+	assertEqual(t, cell(0b1000), cl)
 }
 
 func TestAnd(t *testing.T) {
-	cl := cell(0xa)
-	val := cell(0x6)
+	cl := cell(0b1010)
+	val := cell(0b0110)
 	assertTrue(t, cl.and(val))
-	assertEqual(t, cell(0x2), cl)
+	assertEqual(t, cell(0b0010), cl)
 
-	cl = cell(0x2)
-	val = cell(0x6)
+	cl = cell(0b0010)
+	val = cell(0b0110)
 	assertFalse(t, cl.and(val))
-	assertEqual(t, cell(0x2), cl)
+	assertEqual(t, cell(0b0010), cl)
+}
+
+func TestAndNot(t *testing.T) {
+	cl := cell(0b1010)
+	val := cell(0b0110)
+	assertTrue(t, cl.andNot(val))
+	assertEqual(t, cell(0b1000), cl)
+
+	cl = cell(0b0001)
+	val = cell(0b0110)
+	assertFalse(t, cl.andNot(val))
+	assertEqual(t, cell(0b0001), cl)
 }
 
 func TestReplace(t *testing.T) {
-	cl := cell(0xa)
-	val := cell(0x6)
+	cl := cell(0b1010)
+	val := cell(0b0110)
 	assertTrue(t, cl.replace(val))
-	assertEqual(t, cell(0x6), cl)
+	assertEqual(t, cell(0b0110), cl)
 
-	cl = cell(0x2)
-	val = cell(0x2)
+	cl = cell(0b0010)
+	val = cell(0b0010)
 	assertFalse(t, cl.replace(val))
-	assertEqual(t, cell(0x2), cl)
+	assertEqual(t, cell(0b0010), cl)
 }
 
 func TestOr(t *testing.T) {
-	cl := cell(0xa)
-	val := cell(0x6)
+	cl := cell(0b1010)
+	val := cell(0b0110)
 	assertTrue(t, cl.or(val))
-	assertEqual(t, cell(0xe), cl)
+	assertEqual(t, cell(0b1110), cl)
 
-	cl = cell(0xe)
-	val = cell(0x2)
+	cl = cell(0b1110)
+	val = cell(0b0010)
 	assertFalse(t, cl.or(val))
-	assertEqual(t, cell(0xe), cl)
+	assertEqual(t, cell(0b1110), cl)
 }

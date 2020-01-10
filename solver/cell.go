@@ -45,6 +45,13 @@ func (c *cell) and(o cell) bool {
 	return *c != prev
 }
 
+// andNot ANDs the current cell with the complement of the other cell and returns true if the current cell changes.
+func (c *cell) andNot(o cell) bool {
+	prev := *c
+	*c &= ^o
+	return *c != prev
+}
+
 func (c cell) digits() string {
 	var d []string
 	for i := 1; i <= 9; i++ {
